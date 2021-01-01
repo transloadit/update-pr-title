@@ -27,8 +27,6 @@ async function run() {
       updateTitle = true
     } 
 
-    core.setOutput('titleUpdated', newTitle.toString());
-
     if (updateTitle) {
       request.title = newTitle;
       core.info(`New title is: ${request.title}`);

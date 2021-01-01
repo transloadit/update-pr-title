@@ -4,9 +4,6 @@ author: "Transloadit"
 runs:
   using: "node12"
   main: "dist/index.js"
-outputs:
-  titleUpdated:
-    description: "Whether the PR title was updated"
 branding:
   icon: "edit-3"
   color: "green"
