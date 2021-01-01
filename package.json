@@ -1,0 +1,19 @@
+{
+  "name": "transloadit-update-title",
+  "description": "Update PR title for Transloadit",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build index.js --out dist",
+    "lint": "eslint index.js",
+    "test": "eslint index.js && jest"
+  },
+  "author": "Transloadit",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.3.0",
+    "jest": "^24.9.0"
+  }
+}

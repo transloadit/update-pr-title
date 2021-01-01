@@ -1,0 +1,16 @@
+name: "Pull Request Updater GitHub Action"
+description: "GitHub Action that updates the pull request"
+author: "Transloadit"
+runs:
+  using: "node12"
+  main: "dist/index.js"
+inputs:
+  repo-token:
+    description: "The GITHUB_TOKEN secret"
+    required: true
+outputs:
+  titleUpdated:
+    description: "Whether the PR title was updated"
+branding:
+  icon: "edit-3"
+  color: "green"
