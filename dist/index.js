@@ -73,10 +73,6 @@ const github = __webpack_require__(851);
 async function run() {
   try {
 
-    const inputs = {
-      token: core.getInput('repo-token', {required: true}),
-    }
-
     const request = {
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
@@ -114,7 +110,7 @@ async function run() {
       return;
     }
 
-    const octokit = github.getOctokit(inputs.token);
+    const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
     const response = await octokit.pulls.update(request);
 
     core.info(`Response: ${response.status}`);
