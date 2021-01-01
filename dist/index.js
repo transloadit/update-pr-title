@@ -94,7 +94,6 @@ async function run() {
 
     if (!labels.some(e => e.name === 'review') && !title.includes('WIP')) {
       core.info(`PR doesn't contain 'review' label, adding WIP`);
-      core.info(`New title is: ${request.title}`);
       newTitle = `WIP: ${title}`
       updateTitle = true
     } 
