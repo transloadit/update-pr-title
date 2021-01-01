@@ -4,10 +4,6 @@ author: "Transloadit"
 runs:
   using: "node12"
   main: "dist/index.js"
-inputs:
-  repo-token:
-    description: "The GITHUB_TOKEN secret"
-    required: true
 outputs:
   titleUpdated:
     description: "Whether the PR title was updated"
