@@ -86,6 +86,8 @@ async function run() {
     let updateTitle = false;
 
 
+    core.info(`${JSON.stringify(labels)}`);
+
     if (labels.some(e => e.name === 'review')) {
       core.info(`PR contains 'review' label, removing WIP`);
       newTitle = title.replace('WIP:', '')
