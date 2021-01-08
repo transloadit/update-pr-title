@@ -24,6 +24,9 @@ const getNewTitle = () => {
 
 async function run() {
   try {
+    if (!github.context.payload.pull_request) {
+      return;
+    }
     const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
 
 
