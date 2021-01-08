@@ -25,6 +25,7 @@ const getNewTitle = () => {
 async function run() {
   try {
     if (!github.context.payload.pull_request) {
+      core.info("No PR payload, this is master branch, skipping.")
       return;
     }
     const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
