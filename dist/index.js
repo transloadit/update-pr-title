@@ -70,55 +70,58 @@ module.exports = eval("require")("encoding");
 const core = __webpack_require__(655);
 const github = __webpack_require__(851);
 
+
+
+const getNewTitle = () => {
+  const title = github.context.payload.pull_request.title || '';
+  const labels = github.context.payload.pull_request.labels;
+
+  let newTitle = title;
+
+  if (labels.some(e => e.name === 'review')) {
+    core.info(`PR contains 'review' label, removing WIP`);
+    newTitle = title.replace('WIP:', '')
+  } 
+
+  if (!labels.some(e => e.name === 'review') && !title.includes('WIP')) {
+    core.info(`PR doesn't contain 'review' label, adding WIP`);
+    newTitle = `WIP: ${title}`
+  }
+
+  return newTitle
+} 
+
 async function run() {
   try {
+    const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
 
-    const request = {
+    const response = await octokit.pulls.update({
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
       pull_number: github.context.payload.pull_request.number,
+      title:  getNewTitle(),
+    });
+
+    if (github.context.payload.pull_request.mergeable === false) {
+      await octokit.issues.createComment({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        issue_number: github.context.payload.pull_request.number,
+        body: "You have a merge conflict here",
+      })
+
+      core.info("Added a comment")
+
+      await octokit.issues.removeLabel({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        issue_number: github.context.payload.pull_request.number,
+        name: "review",
+      })
+      
+      core.info("Removed the label")
     }
 
-    const title = github.context.payload.pull_request.title || '';
-    const labels = github.context.payload.pull_request.labels;
-
-    let newTitle;
-    let updateTitle = false;
-
-
-    core.info(`${JSON.stringify(labels)}`);
-
-    if (labels.some(e => e.name === 'review')) {
-      core.info(`PR contains 'review' label, removing WIP`);
-      newTitle = title.replace('WIP:', '')
-      updateTitle = true
-    } 
-
-    if (!labels.some(e => e.name === 'review') && !title.includes('WIP')) {
-      core.info(`PR doesn't contain 'review' label, adding WIP`);
-      newTitle = `WIP: ${title}`
-      updateTitle = true
-    } 
-
-    if (updateTitle) {
-      request.title = newTitle;
-      core.info(`New title is: ${request.title}`);
-    } else {
-      core.warning('No need to update PR title');
-    }
-
-
-    if (!updateTitle) {
-      return;
-    }
-
-    const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
-    const response = await octokit.pulls.update(request);
-
-    core.info(`Response: ${response.status}`);
-    if (response.status !== 200) {
-      core.error('Updating the pull request has failed');
-    }
   }
   catch (error) {
     core.error(error);
