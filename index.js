@@ -33,7 +33,7 @@ async function run() {
       title:  getNewTitle(),
     });
 
-    if (github.context.payload.pull_request.mergeable === false) {
+    // if (github.context.payload.pull_request.mergeable === false) {
       await octokit.issues.createComment({
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
@@ -51,7 +51,7 @@ async function run() {
       })
       
       core.info("Removed the label")
-    }
+    // }
 
   }
   catch (error) {
