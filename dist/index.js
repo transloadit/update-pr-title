@@ -95,14 +95,8 @@ async function run() {
   try {
     const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
 
-    const response = await octokit.pulls.update({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      pull_number: github.context.payload.pull_request.number,
-      title:  getNewTitle(),
-    });
 
-    // if (github.context.payload.pull_request.mergeable === false) {
+    if (github.context.payload.pull_request.mergeable === false) {
       await octokit.issues.createComment({
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
@@ -112,15 +106,27 @@ async function run() {
 
       core.info("Added a comment")
 
-      await octokit.issues.removeLabel({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        issue_number: github.context.payload.pull_request.number,
-        name: "review",
-      })
+      const labels = github.context.payload.pull_request.labels;
+      
+      if (labels.some(e => e.name === 'review')) {
+        await octokit.issues.removeLabel({
+          owner: github.context.repo.owner,
+          repo: github.context.repo.repo,
+          issue_number: github.context.payload.pull_request.number,
+          name: "review",
+        })
+      } 
       
       core.info("Removed the label")
-    // }
+    }
+
+    await octokit.pulls.update({
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+      pull_number: github.context.payload.pull_request.number,
+      title:  getNewTitle(),
+    });
+
 
   }
   catch (error) {
