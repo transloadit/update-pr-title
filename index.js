@@ -11,7 +11,7 @@ const getNewTitle = () => {
 
   if (labels.some(e => e.name === 'review')) {
     core.info(`PR contains 'review' label, removing WIP`);
-    newTitle = title.replace('WIP:', '')
+    newTitle = title.replace('WIP:', '').trim()
   } 
 
   if (!labels.some(e => e.name === 'review') && !title.includes('WIP')) {
