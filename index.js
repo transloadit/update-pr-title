@@ -28,6 +28,12 @@ async function run() {
       core.info("No PR payload, this is master branch, skipping.")
       return;
     }
+
+    if (github.context.payload.merged_at) {
+      core.info("PR already merged, skipping.")
+      return;
+    }
+
     const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
 
 
