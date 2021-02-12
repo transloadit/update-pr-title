@@ -454,6 +454,20 @@
     "@octokit/openapi-types" "^2.2.0"
     "@types/node" ">= 8"
 
+"@slack/types@^1.2.1":
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/@slack/types/-/types-1.10.0.tgz#cbf7d83e1027f4cbfd13d6b429f120c7fb09127a"
+  integrity sha512-tA7GG7Tj479vojfV3AoxbckalA48aK6giGjNtgH6ihpLwTyHE3fIgRrvt8TWfLwW8X8dyu7vgmAsGLRG7hWWOg==
+
+"@slack/webhook@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@slack/webhook/-/webhook-6.0.0.tgz#844593c1e864a966e549f60bb640586628f3c1c4"
+  integrity sha512-2fohfhLI9lkAmOSWt1R457JBsB3iFNqahu4GqdFZRtcp/bT+xeG/kPn/hQa78JS74poRjWTt5G/qJjNaWMGOEQ==
+  dependencies:
+    "@slack/types" "^1.2.1"
+    "@types/node" ">=12.0.0"
+    axios "^0.21.1"
+
 "@types/babel__core@^7.1.0":
   version "7.1.12"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.12.tgz#4d8e9e51eb265552a7e4f1ff2219ab6133bdfb2d"
@@ -511,6 +525,11 @@
   version "14.14.20"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.20.tgz#f7974863edd21d1f8a494a73e8e2b3658615c340"
   integrity sha512-Y93R97Ouif9JEOWPIUyU+eyIdyRqQR0I8Ez1dzku4hDx34NWh4HbtIc3WNzwB1Y9ULvNGeu5B8h8bVL5cAk4/A==
+
+"@types/node@>=12.0.0":
+  version "14.14.26"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.26.tgz#e40df24c957568f350cca04e63bfb1e1556d1cbf"
+  integrity sha512-skWxepWOs+VArEBWd2S/VR3wUavioIIx9/HzW+UJiIjtwa6+kNXdsOeq7FfxDXf56hIcL0ieo2brwMgBJ1+lhw==
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
@@ -704,6 +723,13 @@ aws4@^1.8.0:
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.11.0.tgz#d61f46d83b2519250e2784daf5b09479a8b41c59"
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
+
+axios@^0.21.1:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
+  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
+  dependencies:
+    follow-redirects "^1.10.0"
 
 babel-jest@^24.9.0:
   version "24.9.0"
@@ -1492,6 +1518,11 @@ flatted@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.2.tgz#4575b21e2bcee7434aa9be662f4b7b5f9c2b5138"
   integrity sha512-r5wGx7YeOwNWNlCA0wQ86zKyDLMQr+/RB8xy74M4hTphfmjlijTSSXGuH8rnvKZnfT9i+75zmd8jcKdMR4O6jA==
+
+follow-redirects@^1.10.0:
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.2.tgz#dd73c8effc12728ba5cf4259d760ea5fb83e3147"
+  integrity sha512-6mPTgLxYm3r6Bkkg0vNM0HTjfGrOEtsfbhagQvbxDEsEkpNhw582upBaoRZylzen6krEmxXJgt9Ju6HiI4O7BA==
 
 for-each@^0.3.3:
   version "0.3.3"

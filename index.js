@@ -1,11 +1,12 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const { IncomingWebhook } = require('@slack/webhook');
 
+const url = process.env.SLACK_WEBHOOK_URL;
 
-
-const getNewTitle = () => {
-  const title = github.context.payload.pull_request.title || '';
-  const labels = github.context.payload.pull_request.labels;
+const updateTitle = async (context, octokit) => {
+  const title = context.payload.pull_request.title || '';
+  const labels = context.payload.pull_request.labels;
 
   let newTitle = title;
 
@@ -19,11 +20,35 @@ const getNewTitle = () => {
     newTitle = `WIP: ${title}`
   }
 
-  return newTitle
+  await octokit.pulls.update({
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
+    pull_number: github.context.payload.pull_request.number,
+    title:  newTitle,
+  });
+} 
+
+
+const notifyReview = async (context) => {
+  const webhook = new IncomingWebhook(url);
+  const labels = context.payload.pull_request.labels;
+
+  const reviewMessageBody = {
+    "username": "Github Actions",
+    "text": "Pull request ready for review: <context.payload.pull_request.url:context.payload.pull_request.title>",
+    "icon_emoji": ":octocat:"
+  };
+
+  if (labels.some(e => e.name === 'review')) {
+    core.info(`PR is ready for review, sending slack notification.`);
+    await webhook.send(reviewMessageBody);  
+  } 
 } 
 
 async function run() {
   try {
+    const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+
     if (!github.context.payload.pull_request) {
       core.info("No PR payload, this is master branch, skipping.")
       return;
@@ -33,9 +58,6 @@ async function run() {
       core.info("PR already merged, skipping.")
       return;
     }
-
-    const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
-
 
     if (github.context.payload.pull_request.mergeable === false) {
       await octokit.issues.createComment({
@@ -61,13 +83,9 @@ async function run() {
       core.info("Removed the label")
     }
 
-    await octokit.pulls.update({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      pull_number: github.context.payload.pull_request.number,
-      title:  getNewTitle(),
-    });
+    await notifyReview(github.context)
 
+    await updateTitle(github.context, octokit)
 
   }
   catch (error) {
