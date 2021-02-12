@@ -152,7 +152,7 @@ async function run() {
       core.info("Removed the label")
     }
 
-    await notifyReview(github.context)
+    // await notifyReview(github.context)
 
     await updateTitle(github.context, octokit)
 
