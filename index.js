@@ -35,7 +35,7 @@ const notifyReview = async (context) => {
 
   const reviewMessageBody = {
     "username": "Github Actions",
-    "text": `Pull request ready for review: <${context.payload.pull_request.html_url}|${context.payload.pull_request.title}>`,
+    "text": `Pull request ready by ${context.payload.pull_request.user.login} for review: <${context.payload.pull_request.html_url}|${context.payload.pull_request.title}>`,
     "icon_emoji": ":octocat:"
   };
 
