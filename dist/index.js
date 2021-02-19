@@ -69,9 +69,28 @@ module.exports = eval("require")("encoding");
 
 const core = __webpack_require__(655);
 const github = __webpack_require__(851);
+const { context } = __webpack_require__(633);
 const { IncomingWebhook } = __webpack_require__(293);
 
 const url = process.env.SLACK_WEBHOOK_URL;
+
+
+const notifyReview = async (context) => {
+  const webhook = new IncomingWebhook(url);
+  const labels = context.payload.pull_request.labels;
+
+  const reviewMessageBody = {
+    "username": "Github Actions",
+    "text": `Pull request by ${context.payload.pull_request.user.login} ready for review: <${context.payload.pull_request.html_url}|${context.payload.pull_request.title}>`,
+    "icon_emoji": ":octocat:"
+  };
+
+  if (labels.some(e => e.name === 'review')) {
+    core.info(`PR is ready for review, sending slack notification.`);
+    await webhook.send(reviewMessageBody);  
+  } 
+} 
+
 
 const updateTitle = async (context, octokit) => {
   const title = context.payload.pull_request.title || '';
@@ -98,21 +117,31 @@ const updateTitle = async (context, octokit) => {
 } 
 
 
-const notifyReview = async (context) => {
-  const webhook = new IncomingWebhook(url);
-  const labels = context.payload.pull_request.labels;
+const checkConflict = async (context, octokit) => {
+  if (context.payload.pull_request.mergeable_state === "conflicting") {
+    await octokit.issues.createComment({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      issue_number: context.payload.pull_request.number,
+      body: "You have a merge conflict here",
+    })
 
-  const reviewMessageBody = {
-    "username": "Github Actions",
-    "text": `Pull request by ${context.payload.pull_request.user.login} ready for review: <${context.payload.pull_request.html_url}|${context.payload.pull_request.title}>`,
-    "icon_emoji": ":octocat:"
-  };
+    core.info("Added a comment")
 
-  if (labels.some(e => e.name === 'review')) {
-    core.info(`PR is ready for review, sending slack notification.`);
-    await webhook.send(reviewMessageBody);  
-  } 
-} 
+    const labels = context.payload.pull_request.labels;
+    
+    if (labels.some(e => e.name === 'review')) {
+      await octokit.issues.removeLabel({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        issue_number: context.payload.pull_request.number,
+        name: "review",
+      })
+    } 
+    
+    core.info("Removed the label")
+  }
+}
 
 async function run() {
   try {
@@ -128,31 +157,9 @@ async function run() {
       return;
     }
 
-    if (github.context.payload.pull_request.mergeable === false) {
-      await octokit.issues.createComment({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        issue_number: github.context.payload.pull_request.number,
-        body: "You have a merge conflict here",
-      })
-
-      core.info("Added a comment")
-
-      const labels = github.context.payload.pull_request.labels;
-      
-      if (labels.some(e => e.name === 'review')) {
-        await octokit.issues.removeLabel({
-          owner: github.context.repo.owner,
-          repo: github.context.repo.repo,
-          issue_number: github.context.payload.pull_request.number,
-          name: "review",
-        })
-      } 
-      
-      core.info("Removed the label")
-    }
-
     // await notifyReview(github.context)
+
+    await checkConflict(github.context, octokit)
 
     await updateTitle(github.context, octokit)
 
