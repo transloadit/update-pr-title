@@ -49,7 +49,6 @@ const updateTitle = async (context, octokit) => {
 
 
 const checkConflict = async (context, octokit) => {
-  core.info(`${JSON.stringify(context.payload.pull_request)}`)
   if (context.payload.pull_request.mergeable_state === "conflicting") {
     await octokit.issues.createComment({
       owner: context.repo.owner,
@@ -91,7 +90,7 @@ async function run() {
 
     // await notifyReview(github.context)
 
-    await checkConflict(github.context, octokit)
+    // await checkConflict(github.context, octokit)
 
     await updateTitle(github.context, octokit)
 
