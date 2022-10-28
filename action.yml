@@ -2,7 +2,7 @@ name: "Pull Request Updater GitHub Action"
 description: "GitHub Action that updates the pull request"
 author: "Transloadit"
 runs:
-  using: "node12"
+  using: "node16"
   main: "dist/index.js"
 branding:
   icon: "edit-3"
