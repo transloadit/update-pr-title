@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 const core = require('@actions/core')
 const github = require('@actions/github')
 const { context } = require('@actions/github/lib/utils')
