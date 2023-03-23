@@ -1,41 +1,39 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const { context } = require('@actions/github/lib/utils');
-const { IncomingWebhook } = require('@slack/webhook');
+const core = require('@actions/core')
+const github = require('@actions/github')
+const { context } = require('@actions/github/lib/utils')
+const { IncomingWebhook } = require('@slack/webhook')
 
-const url = process.env.SLACK_WEBHOOK_URL;
-
+const url = process.env.SLACK_WEBHOOK_URL
 
 const notifyReview = async (context) => {
-  const webhook = new IncomingWebhook(url);
-  const labels = context.payload.pull_request.labels;
+  const webhook = new IncomingWebhook(url)
+  const labels = context.payload.pull_request.labels
 
   const reviewMessageBody = {
-    "username": "Github Actions",
-    "text": `Pull request by ${context.payload.pull_request.user.login} ready for review: <${context.payload.pull_request.html_url}|${context.payload.pull_request.title}>`,
-    "icon_emoji": ":octocat:"
-  };
+    username: 'Github Actions',
+    text: `Pull request by ${context.payload.pull_request.user.login} ready for review: <${context.payload.pull_request.html_url}|${context.payload.pull_request.title}>`,
+    icon_emoji: ':octocat:',
+  }
 
-  if (labels.some(e => e.name === 'review')) {
-    core.info(`PR is ready for review, sending slack notification.`);
-    await webhook.send(reviewMessageBody);  
-  } 
-} 
-
+  if (labels.some((e) => e.name === 'review')) {
+    core.info(`PR is ready for review, sending slack notification.`)
+    await webhook.send(reviewMessageBody)
+  }
+}
 
 const updateTitle = async (context, octokit) => {
-  const title = context.payload.pull_request.title || '';
-  const labels = context.payload.pull_request.labels;
+  const title = context.payload.pull_request.title || ''
+  const labels = context.payload.pull_request.labels
 
-  let newTitle = title;
+  let newTitle = title
 
-  if (labels.some(e => e.name === 'review')) {
-    core.info(`PR contains 'review' label, removing WIP`);
+  if (labels.some((e) => e.name === 'review')) {
+    core.info(`PR contains 'review' label, removing WIP`)
     newTitle = title.replace('WIP:', '').trim()
-  } 
+  }
 
-  if (!labels.some(e => e.name === 'review') && !title.includes('WIP')) {
-    core.info(`PR doesn't contain 'review' label, adding WIP`);
+  if (!labels.some((e) => e.name === 'review') && !title.includes('WIP')) {
+    core.info(`PR doesn't contain 'review' label, adding WIP`)
     newTitle = `WIP: ${title}`
   }
 
@@ -43,49 +41,48 @@ const updateTitle = async (context, octokit) => {
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
     pull_number: github.context.payload.pull_request.number,
-    title:  newTitle,
-  });
-} 
-
+    title: newTitle,
+  })
+}
 
 const checkConflict = async (context, octokit) => {
-  if (context.payload.pull_request.mergeable_state === "conflicting") {
+  if (context.payload.pull_request.mergeable_state === 'conflicting') {
     await octokit.issues.createComment({
       owner: context.repo.owner,
       repo: context.repo.repo,
       issue_number: context.payload.pull_request.number,
-      body: "You have a merge conflict here",
+      body: 'You have a merge conflict here',
     })
 
-    core.info("Added a comment")
+    core.info('Added a comment')
 
-    const labels = context.payload.pull_request.labels;
-    
-    if (labels.some(e => e.name === 'review')) {
+    const labels = context.payload.pull_request.labels
+
+    if (labels.some((e) => e.name === 'review')) {
       await octokit.issues.removeLabel({
         owner: context.repo.owner,
         repo: context.repo.repo,
         issue_number: context.payload.pull_request.number,
-        name: "review",
+        name: 'review',
       })
-    } 
-    
-    core.info("Removed the label")
+    }
+
+    core.info('Removed the label')
   }
 }
 
 async function run() {
   try {
-    const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+    const octokit = github.getOctokit(process.env.GITHUB_TOKEN)
 
     if (!github.context.payload.pull_request) {
-      core.info("No PR payload, this is master branch, skipping.")
-      return;
+      core.info('No PR payload, this is master branch, skipping.')
+      return
     }
 
     if (github.context.payload.merged_at) {
-      core.info("PR already merged, skipping.")
-      return;
+      core.info('PR already merged, skipping.')
+      return
     }
 
     // await notifyReview(github.context)
@@ -93,11 +90,9 @@ async function run() {
     // await checkConflict(github.context, octokit)
 
     await updateTitle(github.context, octokit)
-
-  }
-  catch (error) {
-    core.error(error);
-    core.setFailed(error.message);
+  } catch (error) {
+    core.error(error)
+    core.setFailed(error.message)
   }
 }
 
