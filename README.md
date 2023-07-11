@@ -1,3 +1,8 @@
+# deprecated
+
+we are no longer using this since we switched to paid githuv
+
+
 # update-pr-title
 
 Update PR based on labels.
