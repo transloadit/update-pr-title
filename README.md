@@ -1,6 +1,6 @@
 # deprecated
 
-we are no longer using this since we switched to paid githuv
+we are no longer using this since we switched to paid github
 
 
 # update-pr-title
